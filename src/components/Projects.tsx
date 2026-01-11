@@ -93,7 +93,7 @@ export default function Projects() {
         
         {/* Company links section */}
         <div className="mt-16 text-center">
-          <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg">Companies I've worked with:</p>
+          <p className="text-gray-600 dark:text-gray-400 mb-6 text-lg">Companies I&apos;ve worked with:</p>
           <div className="flex flex-wrap justify-center gap-6">
             <a href="https://www.abra-it.com/en/" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition-all hover:scale-105 font-semibold text-gray-700 dark:text-gray-300">
               ABRA

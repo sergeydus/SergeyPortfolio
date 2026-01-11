@@ -11,7 +11,7 @@ export default function Education() {
               <div className="text-6xl">🎓</div>
               <div className="flex-1">
                 <h3 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 mb-3">
-                  Bachelor's Degree in Computer Science
+                  Bachelor&apos;s Degree in Computer Science
                 </h3>
                 <p className="text-xl text-blue-600 dark:text-blue-400 mb-2 font-semibold">
                   Tel-Hai College, Israel
