@@ -1,10 +1,10 @@
 const skills = [
-  { category: 'Languages', items: ['TypeScript', 'JavaScript', 'MySQL', 'Java', 'Kotlin'], icon: '💻' },
-  { category: 'Frontend', items: ['React', 'React Native', 'Next.js', 'Vue 2/3', 'Angular 21+', 'Nuxt', 'TailwindCSS', 'Material UI'], icon: '🎨' },
-  { category: 'Backend', items: ['Node.js', 'NestJS', 'Express.js', 'TypeORM', 'REST APIs'], icon: '⚙️' },
-  { category: 'Database', items: ['MySQL', 'MongoDB', 'SQLite', 'TypeORM'], icon: '🗄️' },
-  { category: 'State Management', items: ['Mobx', 'Pinia', 'Redux'], icon: '🔄' },
-  { category: 'Tools & Practices', items: ['GitHub Copilot', 'Cursor', 'Git', 'Agile/Jira', 'Figma', 'Code Review', 'PR Management'], icon: '🛠️' },
+  { category: 'Languages', items: ['TypeScript', 'JavaScript', 'MySQL', 'Java', 'Kotlin'] },
+  { category: 'Frontend', items: ['React', 'React Native', 'Next.js', 'Vue 2/3', 'Angular 21+', 'Nuxt', 'TailwindCSS', 'Material UI'] },
+  { category: 'Backend', items: ['Node.js', 'NestJS', 'Express.js', 'TypeORM', 'REST APIs'] },
+  { category: 'Database', items: ['MySQL', 'MongoDB', 'SQLite', 'TypeORM'] },
+  { category: 'State Management', items: ['Mobx', 'Pinia', 'Redux'] },
+  { category: 'Tools & Practices', items: ['GitHub Copilot', 'Cursor', 'Git', 'Agile/Jira', 'Figma', 'Code Review', 'PR Management'] },
 ]
 
 export default function Skills() {
@@ -24,7 +24,6 @@ export default function Skills() {
             >
               <div className="p-6">
                 <div className="flex items-center gap-4 mb-4">
-                  <span className="text-4xl">{skill.icon}</span>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
                     {skill.category}
                   </h3>

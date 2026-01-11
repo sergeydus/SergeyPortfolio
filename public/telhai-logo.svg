@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 500">
+  <!-- White background -->
+  <rect width="1600" height="500" fill="white"/>
+  
+  <!-- Logo square with mountains -->
+  <rect x="30" y="100" width="410" height="310" fill="#567856" rx="10"/>
+  <path d="M 120 380 L 235 200 L 350 380 Z" fill="#f5f5f5"/>
+  <path d="M 160 380 L 290 240 L 420 380 Z" fill="#4a6b4a"/>
+  <rect x="30" y="310" width="50" height="100" fill="#567856"/>
+  
+  <!-- Tel-Hai text -->
+  <text x="520" y="220" font-family="Arial, Helvetica, sans-serif" font-size="170" font-weight="700" fill="#567856" letter-spacing="-5">Tel-Hai</text>
+  
+  <!-- College text -->
+  <text x="690" y="380" font-family="Arial, Helvetica, sans-serif" font-size="140" font-weight="400" fill="#567856" letter-spacing="25">College</text>
+</svg>
