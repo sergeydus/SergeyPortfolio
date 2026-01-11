@@ -12,7 +12,7 @@ export default function Education() {
             <div className="flex flex-col md:flex-row md:items-center gap-8">
               <div className="flex-shrink-0">
                 <img 
-                  src="/telhai-logo.svg"
+                  src="telhai-logo.svg"
                   alt="Tel-Hai College Logo"
                   className="h-16 w-auto object-contain"
                 />
