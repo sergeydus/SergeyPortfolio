@@ -180,9 +180,8 @@ export default function Experience() {
                 {exp.projects && (
                   <div className="space-y-8 mt-6">
                     {exp.projects.map((project, projectIdx) => (
-                      <>
+                      <div key={projectIdx}>
                         <div
-                          key={projectIdx}
                           className="border-l-4 border-blue-500 dark:border-blue-400 pl-6 py-4"
                         >
                           <div className={`flex flex-col ${project.image ? 'md:flex-row' : ''} gap-6`}>
@@ -245,7 +244,7 @@ export default function Experience() {
                         {exp.projects && projectIdx < exp.projects.length - 1 && (
                           <div className="my-6 border-t-2 border-gray-200 dark:border-gray-700"></div>
                         )}
-                      </>
+                      </div>
                     ))}
                   </div>
                 )}
