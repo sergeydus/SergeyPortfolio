@@ -5,9 +5,7 @@ import Hero2 from './Hero2'
 
 export default function Hero() {
   const [offset, setOffset] = useState({ x: 0, y: 0 })
-  const [backgroundMode] = useState<'lens' | 'hero2'>(() => (
-    Math.random() < 0.5 ? 'lens' : 'hero2'
-  ))
+  const [backgroundMode] = useState<'lens' | 'hero2'>('hero2')
 
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
