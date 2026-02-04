@@ -47,11 +47,12 @@ export default function Home() {
     camera.position.y = 5;
     camera.rotateX(-Math.PI / 6);
     // camera.lookAt(boxes.current[Math.floor(boxes.current.length / 2)].position);
-    const light = new THREE.PointLight(0xffffff, 400, 30);
+    const light = new THREE.PointLight(0xffffff, 0, 30);
     light.position.set(camera.position.x, camera.position.y, camera.position.z + 5);
     scene.add(light);
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.001);
     scene.add(ambientLight);
+    
     renderer.render(scene, camera);
     const raycaster = new THREE.Raycaster();
 
@@ -83,6 +84,11 @@ export default function Home() {
     const darkColor = new THREE.Color(0x000000)
     const animate = () => {
       animationId = requestAnimationFrame(animate);
+      
+      // Lerp light intensity from 0 to 600
+      light.intensity = THREE.MathUtils.lerp(light.intensity, 600, 0.01);
+      // light.distance = THREE.MathUtils.lerp(light.distance, 30, 0.1);
+      
       renderer.render(scene, camera);
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(scene.children);
@@ -114,7 +120,7 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="w-full h-screen">
+    <div className="w-full h-screen bg-black">
       <canvas ref={canvasRef} />
     </div>
   );
