@@ -1,88 +1,75 @@
 'use client'
 
 import { useState } from 'react'
-import Hero2 from './Hero2'
+import { profile, proofPoints } from '@/content/portfolio'
+import HeroField from '@/components/HeroField'
 
 export default function Hero() {
-  const [offset, setOffset] = useState({ x: 0, y: 0 })
-  const [backgroundMode] = useState<'lens' | 'hero2'>('hero2')
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = (e.clientX - rect.left - rect.width / 2) / rect.width * 20
-    const y = (e.clientY - rect.top - rect.height / 2) / rect.height * 20
-    setOffset({ x, y })
-  }
+  const [isMotionPaused, setIsMotionPaused] = useState(false)
 
   return (
-    <section
-      className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 dark:from-gray-900 dark:via-slate-900 dark:to-gray-900"
-      onMouseMove={backgroundMode === 'lens' ? handleMouseMove : undefined}
-    >
-      {backgroundMode === 'hero2' && (
-        <div className="absolute inset-0 z-0 pointer-events-none">
-          <Hero2 />
-        </div>
-      )}
+    <section id="top" aria-labelledby="hero-heading" className="hero-shell relative isolate flex min-h-[100svh] overflow-hidden bg-[#030712] text-white">
+      <HeroField paused={isMotionPaused} />
+      <div aria-hidden="true" className="hero-vignette absolute inset-0" />
+      <div aria-hidden="true" className="hero-orb hero-orb-one" />
+      <div aria-hidden="true" className="hero-orb hero-orb-two" />
 
-      {backgroundMode === 'lens' && (
-        <>
-          {/* Lens flare hover effect */}
-          <div
-            className="absolute inset-0 transition-all duration-500 ease-out pointer-events-none"
-            style={{
-              background: `radial-gradient(circle 600px at ${50 + offset.x}% ${50 + offset.y}%, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.15) 40%, transparent 70%)`,
-              transform: `translate(${offset.x}px, ${offset.y}px)`
-            }}
-          />
-
-          {/* Animated background elements */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-300 dark:bg-blue-600 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-70 animate-blob"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-teal-300 dark:bg-teal-600 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
-          </div>
-        </>
-      )}
-
-      {/* Blend gradient at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white dark:to-gray-900 pointer-events-none z-20" />
-
-      <div className="container mx-auto px-6 text-center relative z-10">
-        <div className="animate-fade-in-up pointer-events-none">
-          <h1 className="text-6xl md:text-8xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600 dark:from-blue-400 dark:via-cyan-400 dark:to-teal-400 pb-2">
-            Sergey Dushevski
-          </h1>
-          <p className="text-2xl md:text-3xl text-gray-700 dark:text-gray-200 mb-4 font-semibold">
-            Fullstack Developer
-          </p>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-12">
-            6+ Years Building High-Performance Applications
-          </p>
-          <div className="flex gap-4 justify-center flex-wrap">
-            <a
-              href="#contact"
-              onClick={(e) => {
-                e.preventDefault();
-                document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="group pointer-events-auto bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-8 py-4 rounded-full hover:shadow-2xl hover:scale-105 transition-all duration-300 font-semibold flex items-center gap-2"
+      <div className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col px-5 pb-10 pt-28 sm:px-8 lg:px-12 lg:pb-12">
+        <div className="flex items-center justify-between gap-4 font-mono text-[0.66rem] font-bold uppercase tracking-[0.24em] text-cyan-300/80 sm:text-xs">
+          <span>TLV / ISR</span>
+          <div className="flex items-center gap-4 sm:gap-6">
+            <span className="hidden sm:inline">Full-stack · Mobile · Accessibility</span>
+            <button
+              type="button"
+              aria-pressed={isMotionPaused}
+              onClick={() => setIsMotionPaused((isPaused) => !isPaused)}
+              className="motion-control"
             >
-              Get In Touch
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
-            </a>
-            <a
-              href="#projects"
-              onClick={(e) => {
-                e.preventDefault();
-                document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="group pointer-events-auto border-2 border-cyan-600 text-cyan-600 dark:text-cyan-400 dark:border-cyan-400 px-8 py-4 rounded-full hover:bg-cyan-600 hover:text-white dark:hover:bg-cyan-600 transition-all duration-300 font-semibold flex items-center gap-2"
-            >
-              View Projects
-              <span className="group-hover:translate-x-1 transition-transform">→</span>
-            </a>
+              <span aria-hidden="true" className="motion-control-mark" />
+              {isMotionPaused ? 'Play motion' : 'Pause motion'}
+            </button>
           </div>
         </div>
+
+        <div className="flex flex-1 items-center py-16 sm:py-20">
+          <div className="min-w-0 w-full">
+            <p className="hero-reveal mb-5 flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.25em] text-slate-300">
+              <span className="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.95)]" />
+              Available for ambitious product work
+            </p>
+            <h1 id="hero-heading" className="hero-title hero-reveal max-w-7xl text-[clamp(3.8rem,11vw,10rem)] font-black uppercase leading-[0.78] tracking-[-0.075em]">
+              <span className="block text-white">Sergey</span>
+              <span className="hero-gradient-text block pb-[0.14em]">Dushevski</span>
+            </h1>
+
+            <div className="hero-reveal mt-6 grid gap-8 lg:grid-cols-[1fr_1.05fr] lg:items-end">
+              <div className="min-w-0">
+                <p className="text-xl font-bold text-white sm:text-2xl">{profile.title}</p>
+                <p className="mt-2 font-mono text-xs uppercase tracking-[0.18em] text-cyan-300">{profile.experienceLabel}</p>
+              </div>
+              <div className="hero-copy-panel">
+                <p className="max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">{profile.summary}</p>
+                <div className="mt-7 flex flex-wrap gap-3">
+                  <a href="#experience" className="electric-button group">
+                    Explore experience
+                    <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">↗</span>
+                  </a>
+                  <a href="#contact" className="ghost-button">Start a conversation</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <nav aria-label="Selected evidence" className="hero-reveal grid border-y border-white/10 bg-slate-950/35 backdrop-blur-md md:grid-cols-3">
+          {proofPoints.map((point, index) => (
+            <a key={point.id} href={point.href} className="group relative px-5 py-5 transition-colors hover:bg-cyan-300/[0.07] md:px-6 md:[&:not(:last-child)]:border-r md:[&:not(:last-child)]:border-white/10">
+              <span className="font-mono text-[0.65rem] font-bold text-cyan-300/70">0{index + 1}</span>
+              <span className="mt-2 block text-sm font-bold uppercase tracking-[0.1em] text-white">{point.label}</span>
+              <span className="mt-1.5 block text-sm leading-6 text-slate-400 transition-colors group-hover:text-slate-200">{point.detail}</span>
+            </a>
+          ))}
+        </nav>
       </div>
     </section>
   )
