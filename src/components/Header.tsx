@@ -1,110 +1,96 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
+
+const navItems = [
+  { name: 'About', href: '#about' },
+  { name: 'Experience', href: '#experience' },
+  { name: 'Projects', href: '#projects' },
+  { name: 'Skills', href: '#skills' },
+  { name: 'Education', href: '#education' },
+  { name: 'Contact', href: '#contact' },
+] as const
 
 export default function Header() {
-  const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
+    if (!isMobileMenuOpen) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMobileMenuOpen(false)
+        menuButtonRef.current?.focus()
+      }
     }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
 
-  const navItems = [
-    { name: 'About', href: '#about' },
-    { name: 'Experience', href: '#experience' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Education', href: '#education' },
-    { name: 'Skills', href: '#skills' },
-    { name: 'Contact', href: '#contact' },
-  ]
-
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault()
-    const element = document.querySelector(href)
-    element?.scrollIntoView({ behavior: 'smooth' })
-    setIsMobileMenuOpen(false)
-  }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isMobileMenuOpen])
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-lg'
-          : 'bg-transparent'
-      }`}
-    >
-      <nav className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-[#030712]/75 text-white backdrop-blur-xl">
+      <span aria-hidden="true" className="scroll-progress" />
+      <nav aria-label="Primary navigation" className="mx-auto max-w-[1500px] px-5 py-3 sm:px-8 lg:px-12">
+        <div className="flex min-h-11 items-center justify-between gap-4">
           <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault()
-              window.scrollTo({ top: 0, behavior: 'smooth' })
-            }}
-            className="text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 transition-all"
+            href="#top"
+            className="group rounded-md font-mono text-xs font-black uppercase tracking-[0.16em] text-white transition-colors hover:text-cyan-300 sm:text-sm"
           >
-            Sergey Dushevski - Portfolio
+            <span className="mr-2 inline-block h-2 w-2 bg-cyan-300 shadow-[0_0_12px_rgba(103,232,249,0.8)] transition-transform group-hover:rotate-45" />
+            Sergey.D
           </a>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
+          <div className="hidden items-center gap-1 lg:flex">
+            {navItems.map((item, index) => (
               <a
-                key={item.name}
+                key={item.href}
                 href={item.href}
-                onClick={(e) => scrollToSection(e, item.href)}
-                className="text-gray-700 dark:text-gray-200 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors font-medium"
+                className="rounded-full px-3 py-2 font-mono text-[0.66rem] font-bold uppercase tracking-[0.13em] text-slate-400 transition-colors hover:bg-white/[0.06] hover:text-cyan-300"
               >
-                {item.name}
+                <span aria-hidden="true" className="mr-1.5 text-slate-400/80">0{index + 1}</span>{item.name}
               </a>
             ))}
           </div>
 
-          {/* Mobile Menu Button */}
           <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-gray-700 dark:text-gray-200"
-            aria-label="Toggle menu"
+            ref={menuButtonRef}
+            type="button"
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-navigation"
+            aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            onClick={() => setIsMobileMenuOpen((isOpen) => !isOpen)}
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white transition-colors hover:border-cyan-300 hover:bg-cyan-300/10 lg:hidden"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+            <svg aria-hidden="true" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
               {isMobileMenuOpen ? (
-                <path d="M6 18L18 6M6 6l12 12" />
+                <path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" />
               ) : (
-                <path d="M4 6h16M4 12h16M4 18h16" />
+                <path strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16" />
               )}
             </svg>
           </button>
         </div>
 
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 space-y-4 animate-fade-in-up">
+        <div
+          id="mobile-navigation"
+          hidden={!isMobileMenuOpen}
+          className="border-t border-white/10 py-3 lg:hidden"
+        >
+          <div className="grid gap-1">
             {navItems.map((item) => (
               <a
-                key={item.name}
+                key={item.href}
                 href={item.href}
-                onClick={(e) => scrollToSection(e, item.href)}
-                className="block text-gray-700 dark:text-gray-200 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors font-medium"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex min-h-11 items-center rounded-lg px-3 font-mono text-xs font-bold uppercase tracking-[0.14em] text-slate-300 hover:bg-white/[0.06] hover:text-cyan-300"
               >
                 {item.name}
               </a>
             ))}
           </div>
-        )}
+        </div>
       </nav>
     </header>
   )

@@ -1,48 +1,25 @@
-const skills = [
-  { category: 'Languages', items: ['TypeScript', 'JavaScript', 'MySQL', 'Java', 'Kotlin'] },
-  { category: 'Frontend', items: ['React', 'React Native', 'Next.js', 'Vue 2/3', 'Angular 21+', 'Nuxt', 'TailwindCSS', 'Material UI'] },
-  { category: 'Backend', items: ['Node.js', 'NestJS', 'Express.js', 'TypeORM', 'REST APIs'] },
-  { category: 'Database', items: ['MySQL', 'MongoDB', 'SQLite', 'TypeORM'] },
-  { category: 'State Management', items: ['Mobx', 'Pinia', 'Redux'] },
-  { category: 'Tools & Practices', items: ['GitHub Copilot', 'Cursor', 'Git', 'Agile/Jira', 'Figma', 'Code Review', 'PR Management'] },
-]
+import { skillGroups } from '@/content/portfolio'
 
 export default function Skills() {
   return (
-    <section id="skills" className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
-      <div className="container mx-auto px-6">
-        <h2 className="text-5xl font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-400 dark:to-blue-400">
-          Skills & Technologies
-        </h2>
-        <p className="text-center text-gray-600 dark:text-gray-400 mb-16 text-lg">Technologies I work with to build exceptional products</p>
-        
-        <div className="max-w-7xl mx-auto space-y-6">
-          {skills.map((skill, index) => (
-            <div
-              key={skill.category}
-              className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 overflow-hidden"
-            >
-              <div className="p-6">
-                <div className="flex items-center gap-4 mb-4">
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {skill.category}
-                  </h3>
-                  <div className="ml-auto text-sm text-gray-500 dark:text-gray-400 font-medium">
-                    {skill.items.length} {skill.items.length === 1 ? 'skill' : 'skills'}
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {skill.items.map((item) => (
-                    <span
-                      key={item}
-                      className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium border border-blue-200 dark:border-gray-700 hover:border-cyan-400 dark:hover:border-cyan-600 hover:shadow-md transition-all duration-200"
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+    <section id="skills" aria-labelledby="skills-heading" className="section-ink py-24 sm:py-32">
+      <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-12">
+        <p className="section-kicker">04 / Capabilities</p>
+        <h2 id="skills-heading" className="section-heading max-w-4xl">A stack is only useful when it moves the product.</h2>
+
+        <div className="mt-14 border-t border-white/10">
+          {skillGroups.map((group, index) => (
+            <section key={group.id} aria-labelledby={`${group.id}-heading`} className="skill-row group grid gap-5 border-b border-white/10 py-7 sm:grid-cols-[4rem_0.7fr_1.5fr] sm:items-center sm:py-9">
+              <span aria-hidden="true" className="font-mono text-xs font-bold text-slate-600">0{index + 1}</span>
+              <h3 id={`${group.id}-heading`} className="text-xl font-black uppercase tracking-[-0.02em] text-white sm:text-2xl">{group.category}</h3>
+              <ul className="flex flex-wrap gap-2 sm:justify-end">
+                {group.items.map((item) => (
+                  <li key={item} className="skill-chip border border-white/10 bg-white/[0.03] px-3 py-2 font-mono text-[0.68rem] font-bold uppercase tracking-[0.07em] text-slate-400 transition-colors group-hover:border-cyan-300/20 group-hover:text-slate-200">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </section>
           ))}
         </div>
       </div>

@@ -1,86 +1,74 @@
-# Portfolio Website
+# Sergey Dushevski — Portfolio
 
-A modern, responsive portfolio website built with Next.js, TypeScript, and Tailwind CSS.
+A fast, accessible, single-page portfolio for a senior full-stack and mobile developer. The site is built as a static Next.js export and deployed to GitHub Pages.
 
-## Features
+## What is implemented
 
-- 🎨 Modern and clean design
-- 📱 Fully responsive
-- 🌙 Dark mode support
-- ⚡ Fast and optimized
-- 🎯 SEO friendly
+- Evidence-led hero, project, experience, skills, education, and contact sections
+- Keyboard-friendly navigation, visible focus states, skip link, reduced-motion support, and semantic landmarks
+- Centralized, typed portfolio content in `src/content/portfolio.ts`
+- Privacy-conscious public profile: no phone number, unverified social links, or downloadable CV
+- Anonymized enterprise banking engagement ending August 11, 2026
+- Deferred Three.js hero built from one instanced mesh, with reduced-motion, offscreen pause, and WebGL-loss fallbacks
+- First-party project captures for recent live work, including Deadlock Draft Oracle, Domino Fill, GreenPark, and DitherIT
+- Canonical, Open Graph, robots, and sitemap metadata
+- Static export configured for the `/SergeyPortfolio` GitHub Pages base path
 
-## Getting Started
+## Requirements
 
-### Prerequisites
+- Node.js 24 LTS (see `.node-version` and `.nvmrc`)
+- npm 11
 
-- Node.js 18+ installed
-- npm or yarn package manager
-
-### Installation
-
-1. Install dependencies:
-
-```bash
-npm install
-```
-
-2. Run the development server:
+## Local development
 
 ```bash
+npm ci
 npm run dev
 ```
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser
+Open <http://localhost:3000>. Development uses the site root; production automatically uses the `/SergeyPortfolio` base path.
 
-## Project Structure
+The local smoke suite uses an installed Google Chrome. CI installs the Chromium revision pinned by Playwright before running the same suite. Before a production promotion, complete `docs/RELEASE_CHECKLIST.md` against the exact deployment artifact.
 
-```
-├── src/
-│   ├── app/              # Next.js app directory
-│   │   ├── globals.css   # Global styles
-│   │   ├── layout.tsx    # Root layout
-│   │   └── page.tsx      # Home page
-│   └── components/       # React components
-│       ├── Hero.tsx
-│       ├── About.tsx
-│       ├── Skills.tsx
-│       ├── Experience.tsx
-│       ├── Projects.tsx
-│       └── Contact.tsx
-├── public/               # Static files
-└── tailwind.config.ts    # Tailwind configuration
-```
-
-## Customization
-
-### Update Personal Information
-
-Edit the component files in `src/components/` to update:
-- Contact information in `Contact.tsx`
-- Work experience in `Experience.tsx`
-- Skills in `Skills.tsx`
-- Projects in `Projects.tsx`
-- About section in `About.tsx`
-
-### Styling
-
-Modify `tailwind.config.ts` to customize colors, fonts, and other design tokens.
-
-## Build for Production
+## Verification
 
 ```bash
-npm run build
-npm start
+npm run verify
+npm audit --omit=dev --audit-level=high
 ```
 
-## Technologies Used
+`npm run verify` runs the dependency policy, ESLint, TypeScript, production build, and browser smoke suite. The generated static site is written to `out/`.
 
-- **Next.js 14** - React framework
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
-- **React** - UI library
+## Content updates
+
+Edit `src/content/portfolio.ts` for profile, proof points, experience, projects, skills, education, certifications, and languages. Components render from that typed source instead of duplicating content.
+
+Contact and deployment settings live in:
+
+- `src/components/Contact.tsx`
+- `src/lib/site.ts`
+- `next.config.js`
+- `.github/workflows/deploy.yml`
+
+Only publish personal details, employer names, metrics, links, or documents after they have been explicitly verified and approved for public use.
+
+## Project structure
+
+```text
+src/
+  app/          App Router entry points, metadata, and global styles
+  components/   Page sections and navigation
+  content/      Canonical portfolio content
+  lib/          Site URL and base-path helpers
+  types/        Portfolio data contracts
+docs/           Product and implementation specification
+public/         First-party static assets
+```
+
+## Deployment
+
+The GitHub Actions workflow validates pull requests and deploys pushes to `main` or `master` to GitHub Pages. Repository Pages settings must use GitHub Actions as the source.
 
 ## License
 
-MIT License - feel free to use this template for your own portfolio!
+MIT
