@@ -26,6 +26,24 @@ function collectPageFailures(page: Page) {
   return failures
 }
 
+async function exposeSoftwareWebGLAsHardware(page: Page) {
+  await page.addInitScript(() => {
+    const rendererParameters = new Set([0x1f01, 0x9246])
+    const prototypes = [
+      WebGLRenderingContext.prototype,
+      WebGL2RenderingContext.prototype,
+    ]
+
+    for (const prototype of prototypes) {
+      const getParameter = prototype.getParameter
+      prototype.getParameter = function getTestParameter(parameter: number) {
+        if (rendererParameters.has(parameter)) return 'ANGLE (Test Hardware GPU)'
+        return getParameter.call(this, parameter)
+      }
+    }
+  })
+}
+
 test('loads the canonical export and completes the primary journey', async ({ page }) => {
   const failures = collectPageFailures(page)
   const response = await page.goto('.')
@@ -145,6 +163,31 @@ test.describe('reduced motion', () => {
       'data-webgl-state',
       /^(reduced|fallback)$/,
     )
+  })
+})
+
+test.describe('WebGL context recovery', () => {
+  test.use({ reducedMotion: 'reduce' })
+
+  test('restores the scene while animation remains reduced', async ({ page }) => {
+    await exposeSoftwareWebGLAsHardware(page)
+    await page.goto('.')
+
+    const canvas = page.locator('canvas[data-webgl-state]')
+    await expect(canvas).toHaveAttribute('data-webgl-state', 'reduced')
+    await expect(canvas).toHaveClass(/is-ready/)
+
+    await canvas.evaluate((element) => {
+      element.dispatchEvent(new Event('webglcontextlost', { cancelable: true }))
+    })
+    await expect(canvas).toHaveAttribute('data-webgl-state', 'fallback')
+    await expect(canvas).not.toHaveClass(/is-ready/)
+
+    await canvas.evaluate((element) => {
+      element.dispatchEvent(new Event('webglcontextrestored'))
+    })
+    await expect(canvas).toHaveAttribute('data-webgl-state', 'reduced')
+    await expect(canvas).toHaveClass(/is-ready/)
   })
 })
 

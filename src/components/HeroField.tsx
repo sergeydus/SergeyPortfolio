@@ -306,7 +306,9 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
 
         const handleContextRestored = () => {
           contextLost = false
-          renderedFrames = 0
+          // start() performs a single render when motion is paused or reduced.
+          // Seed the counter so that render restores the ready class in every mode.
+          renderedFrames = 1
           resize()
           start()
         }
