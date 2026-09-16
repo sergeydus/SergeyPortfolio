@@ -126,6 +126,12 @@ test('runs the Three.js scene only while it is useful and keeps its fallback', a
       element.dispatchEvent(new Event('webglcontextlost', { cancelable: true }))
     })
     await expect(canvas).toHaveAttribute('data-webgl-state', 'fallback')
+
+    await canvas.evaluate((element) => {
+      element.dispatchEvent(new Event('webglcontextrestored'))
+    })
+    await expect(canvas).toHaveAttribute('data-webgl-state', 'running')
+    await expect(canvas).toHaveClass(/is-ready/)
   }
 })
 
@@ -150,6 +156,14 @@ test('exports discovery metadata under the repository base path', async ({ reque
   expect(await robotsResponse.text()).toContain(`${publicSiteURL}sitemap.xml`)
   expect(sitemapResponse.ok()).toBe(true)
   expect(await sitemapResponse.text()).toContain(`<loc>${publicSiteURL}</loc>`)
+})
+
+test('returns a stable 404 for asset-only directories', async ({ request }) => {
+  const directoryResponse = await request.get('projects/')
+  expect(directoryResponse.status()).toBe(404)
+
+  const pageResponse = await request.get('.')
+  expect(pageResponse.ok()).toBe(true)
 })
 
 test('has no automated WCAG A or AA violations', async ({ page }) => {

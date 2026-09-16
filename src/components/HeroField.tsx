@@ -27,6 +27,24 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
     let disposeScene: (() => void) | undefined
 
     const initialize = async () => {
+      const cleanupTasks: Array<() => void> = []
+      let disposed = false
+
+      disposeScene = () => {
+        if (disposed) return
+        disposed = true
+
+        for (let index = cleanupTasks.length - 1; index >= 0; index -= 1) {
+          try {
+            cleanupTasks[index]()
+          } catch {
+            continue
+          }
+        }
+
+        cleanupTasks.length = 0
+      }
+
       performance.mark('portfolio:webgl:init:start')
 
       try {
@@ -47,6 +65,10 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
           antialias: true,
           powerPreference: 'high-performance',
         })
+        cleanupTasks.push(() => {
+          renderer.dispose()
+          renderer.forceContextLoss()
+        })
 
         const gl = renderer.getContext()
         const rendererInfo = gl.getExtension('WEBGL_debug_renderer_info')
@@ -59,8 +81,7 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
         // of degrading the rest of the page on machines without GPU WebGL.
         if (/swiftshader|llvmpipe|software rasterizer/i.test(rendererName)) {
           canvas.dataset.webglState = 'fallback'
-          renderer.dispose()
-          renderer.forceContextLoss()
+          disposeScene()
           return
         }
 
@@ -77,7 +98,6 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
           emissiveIntensity: 1.15,
           metalness: 0.26,
           roughness: 0.38,
-          vertexColors: true,
         })
         const field = new THREE.InstancedMesh(geometry, material, INSTANCE_COUNT)
         field.instanceMatrix.setUsage(THREE.DynamicDrawUsage)
@@ -89,7 +109,6 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
           transparent: true,
           opacity: 0.58,
           blending: THREE.AdditiveBlending,
-          vertexColors: true,
           depthWrite: false,
         })
         const edges = new THREE.InstancedMesh(geometry, edgeMaterial, INSTANCE_COUNT)
@@ -110,6 +129,13 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
         floor.rotation.x = -Math.PI / 2
         floor.position.set(fieldOffsetX, -1.82, 0)
         scene.add(floor)
+        cleanupTasks.push(() => {
+          geometry.dispose()
+          material.dispose()
+          edgeMaterial.dispose()
+          floorGeometry.dispose()
+          floorMaterial.dispose()
+        })
 
         const ambient = new THREE.HemisphereLight(0xb8f7ff, 0x130725, 2.25)
         const keyLight = new THREE.DirectionalLight(0x9be8ff, 1.65)
@@ -143,6 +169,7 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
         let isVisible = true
         let contextLost = false
         let renderedFrames = 0
+        cleanupTasks.push(() => cancelAnimationFrame(animationFrame))
 
         const resize = () => {
           const bounds = canvas.getBoundingClientRect()
@@ -279,6 +306,7 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
 
         const handleContextRestored = () => {
           contextLost = false
+          renderedFrames = 0
           resize()
           start()
         }
@@ -297,6 +325,17 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
           if (reducedMotion.matches || !isVisible) render(performance.now())
         })
 
+        cleanupTasks.push(() => {
+          visibilityObserver.disconnect()
+          resizeObserver.disconnect()
+          window.removeEventListener('pointermove', handlePointerMove)
+          window.removeEventListener('portfolio:motion-change', handleMotionChange)
+          document.removeEventListener('visibilitychange', start)
+          reducedMotion.removeEventListener('change', start)
+          canvas.removeEventListener('webglcontextlost', handleContextLost)
+          canvas.removeEventListener('webglcontextrestored', handleContextRestored)
+        })
+
         visibilityObserver.observe(canvas)
         resizeObserver.observe(canvas)
         window.addEventListener('pointermove', handlePointerMove, { passive: true })
@@ -310,27 +349,10 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
         render(performance.now())
         render(performance.now() + 16)
         start()
-
-        disposeScene = () => {
-          cancelAnimationFrame(animationFrame)
-          visibilityObserver.disconnect()
-          resizeObserver.disconnect()
-          window.removeEventListener('pointermove', handlePointerMove)
-          window.removeEventListener('portfolio:motion-change', handleMotionChange)
-          document.removeEventListener('visibilitychange', start)
-          reducedMotion.removeEventListener('change', start)
-          canvas.removeEventListener('webglcontextlost', handleContextLost)
-          canvas.removeEventListener('webglcontextrestored', handleContextRestored)
-          geometry.dispose()
-          material.dispose()
-          edgeMaterial.dispose()
-          floorGeometry.dispose()
-          floorMaterial.dispose()
-          renderer.dispose()
-          renderer.forceContextLoss()
-        }
       } catch {
+        disposeScene?.()
         canvas.dataset.webglState = 'fallback'
+        canvas.classList.remove('is-ready')
       }
     }
 

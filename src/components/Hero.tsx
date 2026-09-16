@@ -37,12 +37,12 @@ export default function Hero() {
               <span className="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.95)]" />
               Available for ambitious product work
             </p>
-            <h1 id="hero-heading" className="hero-title hero-reveal max-w-7xl text-[clamp(3.8rem,11vw,10rem)] font-black uppercase leading-[0.78] tracking-[-0.075em]">
+            <h1 id="hero-heading" className="hero-title hero-reveal hero-reveal-delay-1 max-w-7xl text-[clamp(3.8rem,11vw,10rem)] font-black uppercase leading-[0.78] tracking-[-0.075em]">
               <span className="block text-white">Sergey</span>
               <span className="hero-gradient-text block pb-[0.14em]">Dushevski</span>
             </h1>
 
-            <div className="hero-reveal mt-6 grid gap-8 lg:grid-cols-[1fr_1.05fr] lg:items-end">
+            <div className="hero-reveal hero-reveal-delay-2 mt-6 grid gap-8 lg:grid-cols-[1fr_1.05fr] lg:items-end">
               <div className="min-w-0">
                 <p className="text-xl font-bold text-white sm:text-2xl">{profile.title}</p>
                 <p className="mt-2 font-mono text-xs uppercase tracking-[0.18em] text-cyan-300">{profile.experienceLabel}</p>
@@ -61,7 +61,7 @@ export default function Hero() {
           </div>
         </div>
 
-        <nav aria-label="Selected evidence" className="hero-reveal grid border-y border-white/10 bg-slate-950/35 backdrop-blur-md md:grid-cols-3">
+        <nav aria-label="Selected evidence" className="hero-reveal hero-reveal-delay-3 grid border-y border-white/10 bg-slate-950/35 backdrop-blur-md md:grid-cols-3">
           {proofPoints.map((point, index) => (
             <a key={point.id} href={point.href} className="group relative px-5 py-5 transition-colors hover:bg-cyan-300/[0.07] md:px-6 md:[&:not(:last-child)]:border-r md:[&:not(:last-child)]:border-white/10">
               <span className="font-mono text-[0.65rem] font-bold text-cyan-300/70">0{index + 1}</span>

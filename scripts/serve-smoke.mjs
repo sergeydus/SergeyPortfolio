@@ -37,11 +37,22 @@ const server = createServer(async (request, response) => {
       filePath = path.join(filePath, 'index.html')
     }
 
-    response.writeHead(200, {
-      'Cache-Control': 'no-store',
-      'Content-Type': contentTypes.get(path.extname(filePath)) ?? 'application/octet-stream',
+    const stream = createReadStream(filePath)
+    stream.once('open', () => {
+      response.writeHead(200, {
+        'Cache-Control': 'no-store',
+        'Content-Type': contentTypes.get(path.extname(filePath)) ?? 'application/octet-stream',
+      })
+      stream.pipe(response)
     })
-    createReadStream(filePath).pipe(response)
+    stream.once('error', () => {
+      if (!response.headersSent) {
+        response.writeHead(404).end('Not found')
+        return
+      }
+
+      response.destroy()
+    })
   } catch {
     response.writeHead(404).end('Not found')
   }
