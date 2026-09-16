@@ -41,6 +41,14 @@ async function exposeSoftwareWebGLAsHardware(page: Page) {
         return getParameter.call(this, parameter)
       }
     }
+
+    // Keep the real SwiftShader render path without letting continuous frames
+    // starve unrelated page interactions on a CPU-only CI runner.
+    window.requestAnimationFrame = (callback) => window.setTimeout(
+      () => callback(performance.now()),
+      100,
+    )
+    window.cancelAnimationFrame = (handle) => window.clearTimeout(handle)
   })
 }
 
@@ -113,44 +121,43 @@ test('loads the canonical export and completes the primary journey', async ({ pa
 })
 
 test('runs the Three.js scene only while it is useful and keeps its fallback', async ({ page }) => {
+  test.setTimeout(60_000)
+  await exposeSoftwareWebGLAsHardware(page)
   await page.goto('.')
 
   const canvas = page.locator('canvas[data-webgl-state]')
-  await expect(canvas).toHaveAttribute('data-webgl-state', /^(running|fallback)$/)
-  const initialState = await canvas.getAttribute('data-webgl-state')
+  await expect(canvas).toHaveAttribute('data-webgl-state', 'running', { timeout: 20_000 })
 
-  if (initialState === 'running') {
-    const motionControl = page.getByRole('button', { name: 'Pause motion' })
-    await motionControl.click()
-    const playMotionControl = page.getByRole('button', { name: 'Play motion' })
-    await expect(playMotionControl).toHaveAttribute('aria-pressed', 'true')
-    await expect(playMotionControl).toBeFocused()
-    await expect(canvas).toHaveAttribute('data-webgl-state', 'paused')
+  const motionControl = page.getByRole('button', { name: 'Pause motion' })
+  await motionControl.click()
+  const playMotionControl = page.getByRole('button', { name: 'Play motion' })
+  await expect(playMotionControl).toHaveAttribute('aria-pressed', 'true')
+  await expect(playMotionControl).toBeFocused()
+  await expect(canvas).toHaveAttribute('data-webgl-state', 'paused')
 
-    await playMotionControl.click()
-    await expect(page.getByRole('button', { name: 'Pause motion' })).toHaveAttribute(
-      'aria-pressed',
-      'false',
-    )
-    await expect(canvas).toHaveAttribute('data-webgl-state', 'running')
+  await playMotionControl.click()
+  await expect(page.getByRole('button', { name: 'Pause motion' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+  await expect(canvas).toHaveAttribute('data-webgl-state', 'running')
 
-    await page.locator('#projects').scrollIntoViewIfNeeded()
-    await expect(canvas).toHaveAttribute('data-webgl-state', 'paused')
+  await page.locator('#projects').scrollIntoViewIfNeeded()
+  await expect(canvas).toHaveAttribute('data-webgl-state', 'paused')
 
-    await page.locator('#top').scrollIntoViewIfNeeded()
-    await expect(canvas).toHaveAttribute('data-webgl-state', 'running')
+  await page.locator('#top').scrollIntoViewIfNeeded()
+  await expect(canvas).toHaveAttribute('data-webgl-state', 'running')
 
-    await canvas.evaluate((element) => {
-      element.dispatchEvent(new Event('webglcontextlost', { cancelable: true }))
-    })
-    await expect(canvas).toHaveAttribute('data-webgl-state', 'fallback')
+  await canvas.evaluate((element) => {
+    element.dispatchEvent(new Event('webglcontextlost', { cancelable: true }))
+  })
+  await expect(canvas).toHaveAttribute('data-webgl-state', 'fallback')
 
-    await canvas.evaluate((element) => {
-      element.dispatchEvent(new Event('webglcontextrestored'))
-    })
-    await expect(canvas).toHaveAttribute('data-webgl-state', 'running')
-    await expect(canvas).toHaveClass(/is-ready/)
-  }
+  await canvas.evaluate((element) => {
+    element.dispatchEvent(new Event('webglcontextrestored'))
+  })
+  await expect(canvas).toHaveAttribute('data-webgl-state', 'running', { timeout: 20_000 })
+  await expect(canvas).toHaveClass(/is-ready/, { timeout: 20_000 })
 })
 
 test.describe('reduced motion', () => {
@@ -170,12 +177,13 @@ test.describe('WebGL context recovery', () => {
   test.use({ reducedMotion: 'reduce' })
 
   test('restores the scene while animation remains reduced', async ({ page }) => {
+    test.setTimeout(60_000)
     await exposeSoftwareWebGLAsHardware(page)
     await page.goto('.')
 
     const canvas = page.locator('canvas[data-webgl-state]')
-    await expect(canvas).toHaveAttribute('data-webgl-state', 'reduced')
-    await expect(canvas).toHaveClass(/is-ready/)
+    await expect(canvas).toHaveAttribute('data-webgl-state', 'reduced', { timeout: 20_000 })
+    await expect(canvas).toHaveClass(/is-ready/, { timeout: 20_000 })
 
     await canvas.evaluate((element) => {
       element.dispatchEvent(new Event('webglcontextlost', { cancelable: true }))
@@ -186,8 +194,8 @@ test.describe('WebGL context recovery', () => {
     await canvas.evaluate((element) => {
       element.dispatchEvent(new Event('webglcontextrestored'))
     })
-    await expect(canvas).toHaveAttribute('data-webgl-state', 'reduced')
-    await expect(canvas).toHaveClass(/is-ready/)
+    await expect(canvas).toHaveAttribute('data-webgl-state', 'reduced', { timeout: 20_000 })
+    await expect(canvas).toHaveClass(/is-ready/, { timeout: 20_000 })
   })
 })
 
