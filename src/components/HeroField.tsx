@@ -47,6 +47,23 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
           antialias: true,
           powerPreference: 'high-performance',
         })
+
+        const gl = renderer.getContext()
+        const rendererInfo = gl.getExtension('WEBGL_debug_renderer_info')
+        const rendererName = String(
+          gl.getParameter(rendererInfo?.UNMASKED_RENDERER_WEBGL ?? gl.RENDERER),
+        )
+
+        // Continuous instanced animation overwhelms software rasterizers such as
+        // SwiftShader and llvmpipe. Keep the designed CSS field visible instead
+        // of degrading the rest of the page on machines without GPU WebGL.
+        if (/swiftshader|llvmpipe|software rasterizer/i.test(rendererName)) {
+          canvas.dataset.webglState = 'fallback'
+          renderer.dispose()
+          renderer.forceContextLoss()
+          return
+        }
+
         renderer.setClearColor(0x030712, 0)
         renderer.outputColorSpace = THREE.SRGBColorSpace
         renderer.toneMapping = THREE.ACESFilmicToneMapping
