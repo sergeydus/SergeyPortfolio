@@ -8,6 +8,7 @@ const INSTANCE_COUNT = COLUMNS * ROWS
 const GRID_SPACING_X = 1
 const GRID_SPACING_Z = 0.82
 const EDGE_FADE_CELLS = 6
+const WAVE_TIME_SCALE = 0.58
 
 export default function HeroField({ paused = false }: { paused?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -88,14 +89,14 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
         renderer.setClearColor(0x030712, 0)
         renderer.outputColorSpace = THREE.SRGBColorSpace
         renderer.toneMapping = THREE.ACESFilmicToneMapping
-        renderer.toneMappingExposure = 1.38
+        renderer.toneMappingExposure = 1.18
 
         const fieldOffsetX = 3.2
         const geometry = new THREE.BoxGeometry(1, 1, 1)
         const material = new THREE.MeshStandardMaterial({
           color: 0xffffff,
           emissive: 0x0b2848,
-          emissiveIntensity: 1.15,
+          emissiveIntensity: 0.45,
           metalness: 0.26,
           roughness: 0.38,
         })
@@ -107,7 +108,7 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
           color: 0xffffff,
           wireframe: true,
           transparent: true,
-          opacity: 0.58,
+          opacity: 0.24,
           blending: THREE.AdditiveBlending,
           depthWrite: false,
         })
@@ -137,10 +138,10 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
           floorMaterial.dispose()
         })
 
-        const ambient = new THREE.HemisphereLight(0xb8f7ff, 0x130725, 2.25)
-        const keyLight = new THREE.DirectionalLight(0x9be8ff, 1.65)
-        const pointerLight = new THREE.PointLight(0x5eeeff, 92, 17, 1.55)
-        const violetLight = new THREE.PointLight(0xb875ff, 68, 20, 1.45)
+        const ambient = new THREE.HemisphereLight(0xb8f7ff, 0x130725, 0.9)
+        const keyLight = new THREE.DirectionalLight(0x9be8ff, 0.675)
+        const pointerLight = new THREE.PointLight(0x5eeeff, 30.4, 17, 1.55)
+        const violetLight = new THREE.PointLight(0xb875ff, 28, 20, 1.45)
         keyLight.position.set(-9, 14, 11)
         pointerLight.position.set(0, 4.5, 4)
         violetLight.position.set(-9, 2.5, -7)
@@ -182,6 +183,7 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
 
         const render = (time: number) => {
           const seconds = reducedMotion.matches ? 1.4 : time * 0.001
+          const waveTime = seconds * WAVE_TIME_SCALE
           pointer.lerp(targetPointer, reducedMotion.matches ? 1 : 0.065)
 
           camera.position.x = pointer.x * 1.15
@@ -201,8 +203,8 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
           const lightZ = hillPosition.y
           pointerLight.position.x = lightX + fieldOffsetX
           pointerLight.position.z = lightZ
-          violetLight.position.x = fieldOffsetX - 8 + Math.sin(seconds * 0.32) * 3
-          violetLight.position.z = -6 + Math.cos(seconds * 0.28) * 2
+          violetLight.position.x = fieldOffsetX - 8 + Math.sin(waveTime * 0.32) * 3
+          violetLight.position.z = -6 + Math.cos(waveTime * 0.28) * 2
 
           let index = 0
           for (let row = 0; row < ROWS; row += 1) {
@@ -216,8 +218,8 @@ export default function HeroField({ paused = false }: { paused?: boolean }) {
                 COLUMNS - 1 - column,
               )
               const edgeFade = THREE.MathUtils.smoothstep(edgeDistance, 0, EDGE_FADE_CELLS)
-              const travelingWave = Math.sin(x * 0.68 + z * 0.32 - seconds * 1.65)
-              const crossingWave = Math.cos(z * 0.72 - x * 0.16 + seconds * 1.1)
+              const travelingWave = Math.sin(x * 0.68 + z * 0.32 - waveTime * 1.65)
+              const crossingWave = Math.cos(z * 0.72 - x * 0.16 + waveTime * 1.1)
               const distance = Math.hypot(x - lightX, z - lightZ)
               const pointerLift = Math.max(0, 1 - distance / 7)
               const wave = (travelingWave * 0.58 + crossingWave * 0.42 + 1) * 0.5
